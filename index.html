@@ -61,19 +61,22 @@
             font-size: 17px;
             color: var(--text-color);
             text-decoration: none;
-            letter-spacing: -0.01em;
         }
 
-        .nav-links a {
+        .nav-links a, .contact-trigger {
             color: var(--text-secondary);
             text-decoration: none;
             font-size: 12px;
             font-weight: 400;
             margin-left: 24px;
             transition: color 0.2s ease;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
         }
 
-        .nav-links a:hover {
+        .nav-links a:hover, .contact-trigger:hover {
             color: var(--text-color);
         }
 
@@ -88,7 +91,6 @@
         .hero h1 {
             font-size: 56px;
             font-weight: 600;
-            letter-spacing: -0.005em;
             margin-bottom: 10px;
             background: linear-gradient(180deg, #fff 0%, #a1a1a6 100%);
             -webkit-background-clip: text;
@@ -98,18 +100,19 @@
         .hero p {
             font-size: 24px;
             color: var(--text-secondary);
-            font-weight: 400;
             margin-bottom: 24px;
         }
 
-        .cta-link {
+        .cta-btn {
             color: var(--accent-color);
-            text-decoration: none;
+            background: none;
+            border: none;
             font-size: 19px;
-            font-weight: 400;
+            cursor: pointer;
+            font-family: inherit;
         }
 
-        .cta-link:hover {
+        .cta-btn:hover {
             text-decoration: underline;
         }
 
@@ -131,23 +134,83 @@
             border-radius: 18px;
             padding: 60px 40px;
             text-align: center;
+        }
+
+        .card h2 { font-size: 32px; font-weight: 600; margin-bottom: 8px; }
+        .card p { font-size: 17px; color: var(--text-secondary); max-width: 320px; margin-bottom: 20px; }
+
+        /* Contact Modal (Hidden by Default) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Active Modal class triggered via JS */
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-window {
+            background-color: #161617;
+            width: 100%;
+            max-width: 680px;
+            height: 80vh;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            overflow: hidden;
+            transform: scale(0.95);
             transition: transform 0.3s ease;
         }
 
-        .card h2 {
-            font-size: 32px;
-            font-weight: 600;
-            margin-bottom: 8px;
+        .modal-overlay.active .modal-window {
+            transform: scale(1);
         }
 
-        .card p {
-            font-size: 17px;
+        .modal-header {
+            padding: 20px;
+            display: flex;
+            justify-content: flex-end;
+            background-color: #161617;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
             color: var(--text-secondary);
-            max-width: 320px;
-            margin-bottom: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover { color: #fff; }
+
+        .modal-body {
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .modal-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
         /* Footer */
@@ -155,94 +218,92 @@
             background-color: #161617;
             padding: 40px 22px;
             margin-top: 60px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .footer-container {
-            max-width: 1024px;
-            margin: 0 auto;
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
+        .footer-container { max-width: 1024px; margin: 0 auto; font-size: 12px; color: var(--text-secondary); }
+        .footer-bottom { display: flex; justify-content: space-between; }
 
-        .footer-text {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-        }
-
-        .footer-bottom {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
             .hero h1 { font-size: 40px; }
-            .hero p { font-size: 20px; }
             .grid { grid-template-columns: 1fr; }
-            .card { padding: 40px 20px; }
-            .card h2 { font-size: 28px; }
-            .footer-bottom { flex-direction: column; gap: 10px; }
+            .modal-window { height: 90vh; border-radius: 0; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Navigation -->
     <nav>
         <div class="nav-container">
-            <a href="#" class="logo">Microcon IT Solutions</a>
+            <a href="index.html" class="logo">Microcon IT Solutions</a>
             <div class="nav-links">
-                <a href="#services">Services</a>
-                <a href="#contact">Contact</a>
                 <a href="clients.html">Clients</a>
+                <button class="contact-trigger" onclick="openModal()">Contact</button>
             </div>
         </div>
     </nav>
 
+    <!-- Hero Section -->
     <section class="hero">
         <h1>Web application development.</h1>
         <p>Engineered for tomorrow. Integrated with Intelligence.</p>
-        <a href="mailto:info@microconitsolutions.com" class="cta-link">Contact our team &gt;</a>
+        <button class="cta-btn" onclick="openModal()">Contact our team &gt;</button>
     </section>
 
-    <main class="services-section" id="services">
+    <!-- Services Section -->
+    <main class="services-section">
         <div class="grid">
-            
-            <div class="card">
-                <h2>LLM Integration</h2>
-                <p>Embed intelligence into your workflow. Custom AI integrations built seamlessly.</p>
-            </div>
-
-            <div class="card">
-                <h2>App Creation</h2>
-                <p>Powerful native and cross-platform web applications designed to scale.</p>
-            </div>
-
-            <div class="card">
-                <h2>One-Page Static Sites</h2>
-                <p>Fast, pixel-perfect layouts designed to capture your exact vision instantly.</p>
-            </div>
-
-            <div class="card">
-                <h2>Pure Engineering</h2>
-                <p>Clean structures, optimized codebases, and minimalist Apple-like designs.</p>
-            </div>
-
+            <div class="card"><h2>LLM Integration</h2><p>Embed intelligence into your workflow. Custom AI integrations built seamlessly.</p></div>
+            <div class="card"><h2>App Creation</h2><p>Powerful native and cross-platform web applications designed to scale.</p></div>
+            <div class="card"><h2>One-Page Static Sites</h2><p>Fast, pixel-perfect layouts designed to capture your exact vision instantly.</p></div>
+            <div class="card"><h2>Pure Engineering</h2><p>Clean structures, optimized codebases, and minimalist designs.</p></div>
         </div>
     </main>
 
-    <footer id="contact">
+    <!-- Interactive Contact Modal Window -->
+    <div class="modal-overlay" id="contactModal">
+        <div class="modal-window">
+            <div class="modal-header">
+                <button class="close-btn" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- IMPORTANT: Paste your custom Google Forms Embed iframe source URL below -->
+                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfzAIE-BZtCdHjpC0idjBlZRDEudJ8atNnT-RsOcgTFPKwMpQ/viewform?embedded=true" width="640" height="858" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
         <div class="footer-container">
-            <p class="footer-text">
-                Need premium digital execution? Contact us directly at <a href="mailto:info@microconitsolutions.com" style="color: #fff; text-decoration: none;">info@microconitsolutions.com</a>.
-            </p>
             <div class="footer-bottom">
                 <div>Copyright © 2026 Microcon IT Solutions. All rights reserved.</div>
                 <div>Privacy Policy | Terms of Service</div>
             </div>
         </div>
     </footer>
+
+    <!-- Simple Script to Handle the Display Window -->
+    <script>
+        const modal = document.getElementById('contactModal');
+
+        function openModal() {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; /* Stops main page background scrolling */
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto'; /* Restores scrolling */
+        }
+
+        // Closes window automatically if user clicks on the dark backdrop space
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
 
 </body>
 </html>
